@@ -6,7 +6,7 @@ import java.util.*;
 
 public class Node<A> {
 
-  private A contents;
+  private A contents; 
   // Keep the implementation of sets open, by using the Set interface:
   private Set<Node<A>> successors; 
 

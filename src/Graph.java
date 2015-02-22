@@ -1,37 +1,35 @@
 import java.util.*;
 
-// We represent a graph as table of pairs (contents, node with that contents).
-// This assumes that each node has a unique contents.
+// We represent a graph as a set of nodes. 
 // This is a minimal class so that a graph can be created.
 
 public class Graph<A> {
 
-  // Keep the implementation of maps open, by using the Map interface:
-  private Map<A,Node<A>> nodes;
-
+  // Keep the implementation of sets open, by using the Set interface:
+  private Set<Node<A>> nodes;       
 
   // Constructs the empty graph:
   public Graph() {
     // Choose any implementation of sets you please, but you need to
-    // choose one. 
-    nodes = new LinkedHashMap<A,Node<A>>(); 
-  }
-
-  // Find or create node with a given contents c:
-  public Node<A> nodeWith(A c) { 
-    Node<A> node; // Deliberately uninitialized.
-    if (nodes.containsKey(c)) {
-      node = nodes.get(c);
-    } else {
-      node = new Node<A>(c);
-      nodes.put(c,node);
-    }
-    return node;
+    // choose one.
+    nodes = new LinkedHashSet<Node<A>>(); 
   }
 
   // Get method:
-  public Map<A,Node<A>> nodes() {
+  public Set<Node<A>> nodes() {
     return nodes;
+  }
+
+  // Finds or else creates a node with a given contents c:
+  public Node<A> nodeWith(A c) { 
+    for (Node<A> node : nodes) {  // Inefficient for large graph.
+      if (node.contentsEquals(c))
+        return node; // Found.
+    }
+    // Not found, hence create it:
+    Node<A> node = new Node<A>(c);
+    nodes.add(node);
+    return node;
   }
 
   // Builds sample graph for testing:
@@ -121,12 +119,10 @@ public class Graph<A> {
       int x = nick[i][0]; // Can't get array out of bounds 
       int y = nick[i][1]; // because of assertion (1).
       Coordinate c = new Coordinate(x, y);
+      Node<Coordinate> node = nicksGraph.nodeWith(c);
 
-      // Find or create node:
-      Node<Coordinate> node = nicksGraph.nodeWith(c); 
-
-      // And next add the node's successors. We rely on assertion
-      // (2) again to avoid array out of bounds. Now we start from
+      // And next we add its successors. We rely on assertion (2)
+      // again to avoid array out of bounds. Now we start from
       // position 2, as positions 0 and 1 have already been looked at
       // (they are x and y). Notice that we need to increment by 2.
 
@@ -134,21 +130,81 @@ public class Graph<A> {
         int sx = nick[i][j];   
         int sy = nick[i][j+1]; 
         Coordinate sc = new Coordinate(sx, sy);
-        // Find or create successor node, and then add it
         Node<Coordinate> s = nicksGraph.nodeWith(sc);
         node.addSuccessor(s);
       }
     }
     // Done. We have the graph. Now we print it back to be sure this worked:
-    for (Map.Entry<Coordinate,Node<Coordinate>> e : nicksGraph.nodes.entrySet()) {
-      Coordinate c = e.getKey();
-      Node<Coordinate> node = e.getValue();
-      assert(c.equals(node.contents()));
-      System.out.print("(" + c.x + "," + c.y + "): ");
+    for (Node<Coordinate> node : nicksGraph.nodes()) {
+      System.out.print("(" + node.contents().x + "," + node.contents().y + "): ");
       for(Node<Coordinate> s : node.successors()) {
         System.out.print("(" + s.contents().x + "," + s.contents().y + "), ");
       }
       System.out.println();
     }
-}
+  }
+  
+  public Maybe<Node> dfs(Node<A> x, Predicate<A> p)
+  {
+	  Stack<Node<A>> stack = new Stack<Node<A>>();
+	  Set<Node<A>> visited = new LinkedHashSet<Node<A>>();
+	  Set<Node<A>> successors = new LinkedHashSet<Node<A>>();
+	  
+	  stack.push(x);
+	 
+	  //Start with an empty stack // For backtracing
+	  //ush the starting node into the stack
+	  while(!stack.empty())
+	  {
+		  Node<A> current = stack.pop();
+		  
+		  if(!visited.contains(current))
+		  {
+			  if(p.holds(current.contents()))
+			  {
+				  return new Just(current.contents());
+			  }
+			  visited.add(current);
+			  successors = current.successors();
+			  
+			  for(Iterator<Node<A>> i = successors.iterator(); i.hasNext();)
+			  {
+				  stack.push(i.next());
+			  }
+		  }
+	  }
+	  return new Nothing();
+  }
+  
+  public Maybe<Node> bfs(Node<A> x, Predicate<A> p)
+  {
+	  Queue<Node<A>> queue = new LinkedList<Node<A>>();
+	  Set<Node<A>> visited = new LinkedHashSet<Node<A>>();
+	  Set<Node<A>> successors = new LinkedHashSet<Node<A>>();
+	  
+	  queue.add(x);
+	 
+	  //Start with an empty stack // For backtracing
+	  //ush the starting node into the stack
+	  while(!queue.isEmpty())
+	  {
+		  Node<A> current = queue.poll();
+		  
+		  if(!visited.contains(current))
+		  {
+			  if(p.holds(current.contents()))
+			  {
+				  return new Just(current.contents());
+			  }
+			  visited.add(current);
+			  successors = current.successors();
+			  
+			  for(Iterator<Node<A>> i = successors.iterator(); i.hasNext();)
+			  {
+				  queue.add(i.next());
+			  }
+		  }
+	  }
+	  return new Nothing();
+  }
 }
