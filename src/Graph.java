@@ -107,6 +107,9 @@ public class Graph<A> {
       {9,5,8,5,9,4,9,6}, 
       {9,6,9,5,8,6} 
     };
+    
+    
+    
 
     Graph<Coordinate> nicksGraph = new Graph<Coordinate>();
 
@@ -141,8 +144,9 @@ public class Graph<A> {
         System.out.print("(" + s.contents().x + "," + s.contents().y + "), ");
       }
       System.out.println();
-    }
+    } 
   }
+  
   
   public Maybe<Node> dfs(Node<A> x, Predicate<A> p)
   {
@@ -207,5 +211,7 @@ public class Graph<A> {
 	  }
 	  return new Nothing();
   }
+  
+  
   
 }
