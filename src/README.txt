@@ -1,0 +1,1 @@
+Our dfs method (depth first search) is in the graph class as well with bfs (breadth first search)

@@ -1,3 +1,4 @@
+import java.awt.Point;
 import java.util.*;
 
 // We represent a graph as a set of nodes. 
@@ -145,6 +146,11 @@ public class Graph<A> {
       }
       System.out.println();
     } 
+    
+    //These two print lines show that the dfs and bfs methods. 
+    System.out.println(nicksGraph.dfs(nicksGraph.nodeWith(new Coordinate(0,0)), a->a.getX()==3));
+
+    System.out.println(nicksGraph.bfs(nicksGraph.nodeWith(new Coordinate(0,0)), a->a.getX()==6));
   }
   
   
@@ -211,6 +217,7 @@ public class Graph<A> {
 	  }
 	  return new Nothing();
   }
+  
   
   
   
