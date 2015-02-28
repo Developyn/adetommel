@@ -35,4 +35,9 @@ public class Node<A> {
   public Set<Node<A>> successors() {
     return successors;
   }
+  public String toString()
+  {
+	  return ""+this.contents;
+  }
+  
 }

@@ -1,4 +1,3 @@
-import java.awt.Point;
 import java.util.*;
 
 // We represent a graph as a set of nodes. 
@@ -108,9 +107,6 @@ public class Graph<A> {
       {9,5,8,5,9,4,9,6}, 
       {9,6,9,5,8,6} 
     };
-    
-    
-    
 
     Graph<Coordinate> nicksGraph = new Graph<Coordinate>();
 
@@ -148,9 +144,8 @@ public class Graph<A> {
     } 
     
     //These two print lines show that the dfs and bfs methods. 
-    System.out.println(nicksGraph.dfs(nicksGraph.nodeWith(new Coordinate(0,0)), a->a.getX()==3));
-
-    System.out.println(nicksGraph.bfs(nicksGraph.nodeWith(new Coordinate(0,0)), a->a.getX()==6));
+    System.out.println(nicksGraph.dfs(nicksGraph.nodeWith(new Coordinate(0,1)), (a->a.getY()==5 && a.getX()==9)));
+    System.out.println(nicksGraph.bfs(nicksGraph.nodeWith(new Coordinate(0,1)), (a->a.getY()==5 && a.getX()==9)));
   }
   
   
@@ -159,9 +154,10 @@ public class Graph<A> {
 	  Stack<Node<A>> stack = new Stack<Node<A>>();
 	  Set<Node<A>> visited = new LinkedHashSet<Node<A>>();
 	  Set<Node<A>> successors = new LinkedHashSet<Node<A>>();
+	  Stack<Node<A>> path = new Stack<Node<A>>();
 	  
 	  stack.push(x);
-	 
+	  
 	  //Start with an empty stack // For backtracing
 	  //ush the starting node into the stack
 	  while(!stack.empty())
@@ -170,9 +166,12 @@ public class Graph<A> {
 		  
 		  if(!visited.contains(current))
 		  {
+			  
+			  path.push(current);
+			  
 			  if(p.holds(current.contents()))
 			  {
-				  return new Just(current.contents());
+				  return new Just("Our dfs path is: " + path);
 			  }
 			  visited.add(current);
 			  successors = current.successors();
@@ -180,8 +179,10 @@ public class Graph<A> {
 			  for(Iterator<Node<A>> i = successors.iterator(); i.hasNext();)
 			  {
 				  stack.push(i.next());
-			  }
+			  }			  
 		  }
+		  
+		  returnPath(path);
 	  }
 	  return new Nothing();
   }
@@ -191,7 +192,8 @@ public class Graph<A> {
 	  Queue<Node<A>> queue = new LinkedList<Node<A>>();
 	  Set<Node<A>> visited = new LinkedHashSet<Node<A>>();
 	  Set<Node<A>> successors = new LinkedHashSet<Node<A>>();
-	  
+	  Stack<Node<A>> path = new Stack<Node<A>>();
+
 	  queue.add(x);
 	 
 	  //Start with an empty stack // For backtracing
@@ -202,9 +204,11 @@ public class Graph<A> {
 		  
 		  if(!visited.contains(current))
 		  {
+			  path.push(current);
+
 			  if(p.holds(current.contents()))
 			  {
-				  return new Just(current.contents());
+				  return new Just("Our bfs path is: " + path);
 			  }
 			  visited.add(current);
 			  successors = current.successors();
@@ -214,11 +218,13 @@ public class Graph<A> {
 				  queue.add(i.next());
 			  }
 		  }
+		  returnPath(path);
 	  }
 	  return new Nothing();
   }
   
-  
-  
-  
+  public Stack<Node<A>> returnPath(Stack stack)
+  {
+	  return stack;
+  }
 }

@@ -37,6 +37,6 @@ public class Coordinate {
    */
   public String toString()
   {
-	  return " the co-ordinate is at: " +x+ ","+y;
+	  return x+ ","+y;
   }
 }
