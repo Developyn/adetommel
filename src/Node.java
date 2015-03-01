@@ -35,6 +35,9 @@ public class Node<A> {
   public Set<Node<A>> successors() {
     return successors;
   }
+  /**
+   * toString method so when we output the node/s we want it's comprehendable
+   */
   public String toString()
   {
 	  return ""+this.contents;

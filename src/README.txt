@@ -1,1 +1,1 @@
-Our dfs method (depth first search) is in the graph class as well with bfs (breadth first search)
+Our dfs method (depth first search) is in the graph class with path now implemented as well with bfs with path now implemented(breadth first search)

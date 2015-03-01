@@ -35,7 +35,7 @@ public class Graph<A> {
   // Builds sample graph for testing:
   public static void main(String args []) {    
 
-    int [] [] nick = {
+    int [][] nick = {
       {0,0,1,0,0,1}, 
       {0,1,0,0,1,1,0,2}, 
       {0,2,0,3,0,1}, 
@@ -143,12 +143,17 @@ public class Graph<A> {
       System.out.println();
     } 
     
-    //These two print lines show that the dfs and bfs methods. 
+    //These two print lines the paths created from one point to another in the console. 
     System.out.println(nicksGraph.dfs(nicksGraph.nodeWith(new Coordinate(0,1)), (a->a.getY()==5 && a.getX()==9)));
     System.out.println(nicksGraph.bfs(nicksGraph.nodeWith(new Coordinate(0,1)), (a->a.getY()==5 && a.getX()==9)));
   }
   
-  
+  /**
+   * Our dfs (depth first search) method now includes the path from one point to another
+   * @param x - the starting node
+   * @param p - the end node, the one we find a path to.
+   * @return A path of nodes to get from the x to p
+   */
   public Maybe<Node> dfs(Node<A> x, Predicate<A> p)
   {
 	  Stack<Node<A>> stack = new Stack<Node<A>>();
@@ -158,8 +163,7 @@ public class Graph<A> {
 	  
 	  stack.push(x);
 	  
-	  //Start with an empty stack // For backtracing
-	  //ush the starting node into the stack
+	  
 	  while(!stack.empty())
 	  {
 		  Node<A> current = stack.pop();
@@ -187,6 +191,12 @@ public class Graph<A> {
 	  return new Nothing();
   }
   
+  /**
+   * Our bfs (breadth first search) method now includes the path from one point to another
+   * @param x - the starting node
+   * @param p - the end node, the one we want to find a path to
+   * @return A path of nodes from x to p
+   */
   public Maybe<Node> bfs(Node<A> x, Predicate<A> p)
   {
 	  Queue<Node<A>> queue = new LinkedList<Node<A>>();
@@ -196,8 +206,7 @@ public class Graph<A> {
 
 	  queue.add(x);
 	 
-	  //Start with an empty stack // For backtracing
-	  //ush the starting node into the stack
+	  
 	  while(!queue.isEmpty())
 	  {
 		  Node<A> current = queue.poll();

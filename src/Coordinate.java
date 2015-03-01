@@ -33,7 +33,7 @@ public class Coordinate {
   }
   
   /**
-   * Makes the readout in the console comprehendable.
+   * Makes the readout in the console understandable.
    */
   public String toString()
   {
