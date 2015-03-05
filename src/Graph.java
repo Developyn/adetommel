@@ -145,180 +145,45 @@ public class Graph<A> {
     
     System.out.println("Nodes:");
     
-    //These two print lines are for finding a node
-    System.out.println(nicksGraph.bfs(nicksGraph.nodeWith(new Coordinate(0,0)), a->a.getX()==9));
-    System.out.println(nicksGraph.dfs(nicksGraph.nodeWith(new Coordinate(0,0)), a->a.getY()==5));
-    
-    System.out.println("Paths:");
-    
-    //These two print lines the paths created from one point to another in the console. 
-    System.out.println(nicksGraph.dfsPath(nicksGraph.nodeWith(new Coordinate(0,1)), (a->a.getY()==5 && a.getX()==9)));
-    System.out.println(nicksGraph.bfsPath(nicksGraph.nodeWith(new Coordinate(0,1)), (a->a.getY()==5 && a.getX()==9)));
+    /*BFS*/
+    System.out.println(nicksGraph.findPath(nicksGraph.nodeWith(new Coordinate(0,1)), (a->a.getX()==5 && a.getY()==5), new Queue<Node<Coordinate>>()));
+    /*DFS*/
+    System.out.println(nicksGraph.findPath(nicksGraph.nodeWith(new Coordinate(0,1)), (a->a.getX()==5 && a.getY()==5), new Stack<Node<Coordinate>>()));
   }
   
-  /**
-   * Our dfs mehtod that uses depth first search to find a particular node
-   * @param x - A Node value
-   * @param p - The node you are looking for
-   * @return A node based on the values of predicate p
-   */
-  public Maybe<Node> dfs(Node<A> x, Predicate<A> p)
+  //Generalisation
+  public Maybe<Node<A>> findPath (Node<A> nodeStart, Predicate<A> pred, DataStructure<Node<A>> frontier)
   {
-	  Stack<Node<A>> stack = new Stack<Node<A>>();
-	  Set<Node<A>> visited = new LinkedHashSet<Node<A>>();
-	  Set<Node<A>> successors = new LinkedHashSet<Node<A>>();
+	  Collection<Node<A>> visited = new LinkedHashSet<Node<A>>();
+	  frontier.insertItem(nodeStart);
 	  
-	  stack.push(x);
-	 
-	  //Start with an empty stack // For backtracing
-	  //ush the starting node into the stack
-	  while(!stack.empty())
+	  
+	  while(!frontier.isEmpty())
 	  {
-		  Node<A> current = stack.pop();
-		  
-		  if(!visited.contains(current))
+		  if(visited.contains(frontier.getHead().fromMaybe()))
 		  {
-			  if(p.holds(current.contents()))
-			  {
-				  return new Just(current.contents());
-			  }
-			  visited.add(current);
-			  successors = current.successors();
+			  frontier.removeHead();
+		  }
+		  else if(pred.holds(frontier.getHead().fromMaybe().contents()))
+		  {
+			  return frontier.getHead();
+			  //reconstruct
+		  }
+		  else
+		  {
+			  Node<A> toExpand = frontier.getHead().fromMaybe();
+			  visited.add(toExpand);
+			  frontier.removeHead();
 			  
-			  for(Iterator<Node<A>> i = successors.iterator(); i.hasNext();)
+			  IList<Node<A>> successors = new Nil<Node<A>>();
+			  for(Node<A> i : toExpand.successors())
 			  {
-				  stack.push(i.next());
+					successors = successors.append(i);
 			  }
+			  
+			  frontier.insertList(successors);
 		  }
 	  }
-	  return new Nothing();
-  }
-  
-  /**
-   * Our bfs method that uses breadth first search to find a particular node
-   * @param x - A Node value
-   * @param p - The node you are looking for
-   * @return A node based on the values of predicate p
-   */
-  public Maybe<Node> bfs(Node<A> x, Predicate<A> p)
-  {
-	  Queue<Node<A>> queue = new LinkedList<Node<A>>();
-	  Set<Node<A>> visited = new LinkedHashSet<Node<A>>();
-	  Set<Node<A>> successors = new LinkedHashSet<Node<A>>();
-	  
-	  queue.add(x);
-	 
-	  //Start with an empty stack // For backtracing
-	  //ush the starting node into the stack
-	  while(!queue.isEmpty())
-	  {
-		  Node<A> current = queue.poll();
-		  
-		  if(!visited.contains(current))
-		  {
-			  if(p.holds(current.contents()))
-			  {
-				  return new Just(current.contents());
-			  }
-			  visited.add(current);
-			  successors = current.successors();
-			  
-			  for(Iterator<Node<A>> i = successors.iterator(); i.hasNext();)
-			  {
-				  queue.add(i.next());
-			  }
-		  }
-	  }
-	  return new Nothing();
-  }
-  
-  
-  /**
-   * Our dfsPath (depth first search) method that includes the path from one point to another
-   * @param x - the starting node
-   * @param p - the end node, the one we find a path to.
-   * @return A path of nodes to get from the x to p
-   */
-  public Maybe<Node> dfsPath(Node<A> x, Predicate<A> p)
-  {
-	  Stack<Node<A>> stack = new Stack<Node<A>>();
-	  Set<Node<A>> visited = new LinkedHashSet<Node<A>>();
-	  Set<Node<A>> successors = new LinkedHashSet<Node<A>>();
-	  Stack<Node<A>> path = new Stack<Node<A>>();
-	  
-	  stack.push(x);
-	  
-	  
-	  while(!stack.empty())
-	  {
-		  Node<A> current = stack.pop();
-		  
-		  if(!visited.contains(current))
-		  {
-			  
-			  path.push(current);
-			  
-			  if(p.holds(current.contents()))
-			  {
-				  return new Just("Our dfs path is: " + path);
-			  }
-			  visited.add(current);
-			  successors = current.successors();
-			  
-			  for(Iterator<Node<A>> i = successors.iterator(); i.hasNext();)
-			  {
-				  stack.push(i.next());
-			  }			  
-		  }
-		  
-		  returnPath(path);
-	  }
-	  return new Nothing();
-  }
-  
-  /**
-   * Our bfsPath (breadth first search) method that includes the path from one point to another
-   * @param x - the starting node
-   * @param p - the end node, the one we want to find a path to
-   * @return A path of nodes from x to p
-   */
-  public Maybe<Node> bfsPath(Node<A> x, Predicate<A> p)
-  {
-	  Queue<Node<A>> queue = new LinkedList<Node<A>>();
-	  Set<Node<A>> visited = new LinkedHashSet<Node<A>>();
-	  Set<Node<A>> successors = new LinkedHashSet<Node<A>>();
-	  Stack<Node<A>> path = new Stack<Node<A>>();
-
-	  queue.add(x);
-	 
-	  
-	  while(!queue.isEmpty())
-	  {
-		  Node<A> current = queue.poll();
-		  
-		  if(!visited.contains(current))
-		  {
-			  path.push(current);
-
-			  if(p.holds(current.contents()))
-			  {
-				  return new Just("Our bfs path is: " + path);
-			  }
-			  visited.add(current);
-			  successors = current.successors();
-			  
-			  for(Iterator<Node<A>> i = successors.iterator(); i.hasNext();)
-			  {
-				  queue.add(i.next());
-			  }
-		  }
-		  returnPath(path);
-	  }
-	  return new Nothing();
-  }
-  
-  public Stack<Node<A>> returnPath(Stack stack)
-  {
-	  return stack;
+	  return new Nothing<Node<A>>();
   }
 }
