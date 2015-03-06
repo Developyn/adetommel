@@ -146,17 +146,22 @@ public class Graph<A> {
     System.out.println("Nodes:");
     
     /*BFS*/
-    System.out.println(nicksGraph.findPath(nicksGraph.nodeWith(new Coordinate(0,1)), (a->a.getX()==5 && a.getY()==5), new Queue<Node<Coordinate>>()));
+   // System.out.println(nicksGraph.findNode(nicksGraph.nodeWith(new Coordinate(4,0)), (a->a.getX()==4 && a.getY()==1), new Queue<Node<Coordinate>>()));
     /*DFS*/
-    System.out.println(nicksGraph.findPath(nicksGraph.nodeWith(new Coordinate(0,1)), (a->a.getX()==5 && a.getY()==5), new Stack<Node<Coordinate>>()));
+    //System.out.println(nicksGraph.findNode(nicksGraph.nodeWith(new Coordinate(4,0)), (a->a.getX()==4 && a.getY()==1), new Stack<Node<Coordinate>>()));
+    
+    System.out.println("Paths:");
+    /*BFS Path*/
+    System.out.println(nicksGraph.findPath(nicksGraph.nodeWith(new Coordinate(1,0)), (a->a.getX()==4 && a.getY()==1), new Queue<Node<Coordinate>>()));
+    /*DFS Path*/
+    System.out.println(nicksGraph.findPath(nicksGraph.nodeWith(new Coordinate(1,0)), (a->a.getX()==4 && a.getY()==1), new Stack<Node<Coordinate>>()));
   }
-  
+
   //Generalisation
-  public Maybe<Node<A>> findPath (Node<A> nodeStart, Predicate<A> pred, DataStructure<Node<A>> frontier)
+  public Maybe<Node<A>> findNode(Node<A> nodeStart, Predicate<A> pred, DataStructure<Node<A>> frontier)
   {
 	  Collection<Node<A>> visited = new LinkedHashSet<Node<A>>();
 	  frontier.insertItem(nodeStart);
-	  
 	  
 	  while(!frontier.isEmpty())
 	  {
@@ -186,4 +191,119 @@ public class Graph<A> {
 	  }
 	  return new Nothing<Node<A>>();
   }
+  
+  //Generalisation
+  public Maybe<IList<Node<A>>> findPath(Node<A> nodeStart, Predicate<A> pred, DataStructure<Node<A>> frontier)
+  {
+	  Collection<Node<A>> visited = new LinkedHashSet<Node<A>>();
+	  frontier.insertItem(nodeStart);
+	  
+	  //Hash Map to store our path
+	  Map<Node<A>, Maybe<Node<A>>> pathMap = new LinkedHashMap< Node<A>, Maybe<Node<A>> >();
+	  
+	  while(!frontier.isEmpty())
+	  {
+		  if(visited.contains(frontier.getHead().fromMaybe()))
+		  {
+			  frontier.removeHead();
+		  }
+		  else if(pred.holds(frontier.getHead().fromMaybe().contents()))
+		  {
+			  Node<A> goal = frontier.getHead().fromMaybe();
+			  pathMap.put(goal,goal.getParent());
+			  return reconstructPath(pathMap, nodeStart, goal);
+		  }
+		  else
+		  {
+			  Node<A> toExpand = frontier.getHead().fromMaybe();
+			  visited.add(toExpand);
+			  frontier.removeHead();
+			  
+			  for(Node<A> n : toExpand.successors())
+			  {
+				  if(!visited.contains(n) && !frontier.checkForDuplicates(n))
+				  {
+					  n.setParent(new Just<Node<A>>(toExpand));
+				  }
+			  }
+			  
+			  //Gets successors to put in the frontier
+			  IList<Node<A>> successors = new Nil<Node<A>>();
+			  for(Node<A> i : toExpand.successors())
+			  {
+					successors = successors.append(i);
+			  }
+			  frontier.insertList(successors);
+			  pathMap.put(toExpand, toExpand.getParent());
+		  }
+	  }
+	  return new Nothing<IList<Node<A>>>();
+  }
+
+  public Maybe<IList<Node<A>>> reconstructPath(Map<Node<A>, Maybe<Node<A>>> pathMap, Node<A> nodeStart, Node<A> goal)
+  {
+		Node<A> node = goal;
+		IList<Node<A>> path = new Nil<Node<A>>();
+		
+		while(!node.contents().equals(nodeStart.contents()))
+		{
+			path = path.append(node);
+			node = pathMap.get(node).fromMaybe();
+		}
+		path = path.append(nodeStart);
+		path = path.reverse();
+
+		return new Just<IList<Node<A>>>(path);
+  }
+  
+//distance between 2 points sqrt( (x1-x2)^2 + (y1+y2)^2 )
+  public Maybe<IList<Node<A>>> AStarSearch(/*origin, destination, heuristic, distance*/)
+  {
+	  /*
+	  visited = empty set
+	  pending = the singleton set(origin)
+	  pred = empty map, like in Djikstra
+	  D = Empty map, recording the cost from origin along best along best known path;
+	  D[origin] = 0;
+	  f - initially empty map, recording estimated total cost;
+	  f[origin] = h(origin, destination)
+	  while(!pending.isEmpty)
+	  {
+	  		n - the node im pending with lowest value(de-queing)
+	  		if(n == destination)
+	  		{
+	  			found node
+	  			use the map pred to reconstruct the path
+	  		}
+	  		add m to visited set
+	  		for each successor s of n that wasnt't visited so far
+	  		{
+	  			cost = D[n] to d(m, s)
+	  			if(s!= imPending OR cost < D[s])
+	  			{
+	  				pred[s] = m;
+	  				D[s] = cost;
+	  				f[s] = D[s] + h(s, destination)
+	  				adds s to pending
+	  			}
+	  		}
+	  }
+	  h takes 2 nodes and pred a Heuristic distances
+	  d takes nodes (connected) by an edge produces the distance
+	  
+	  visited - set
+	  
+	  pending - set
+	  priority queue <- more marks (like a G)
+	  D[origin] = 0
+	  Key       = Value
+	  
+	  D.put(origin, 0)
+	  
+	  f[n] = f.getValue(m);
+	   */
+	  return null;	  
+  }
 }
+  
+  
