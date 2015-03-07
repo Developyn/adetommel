@@ -6,4 +6,5 @@ public interface DataStructure<A>
 	public Maybe<A> getHead();
 	public boolean isEmpty();
 	public boolean checkForDuplicates(A a);
+	public boolean contains(A a);
 }

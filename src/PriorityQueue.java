@@ -76,5 +76,10 @@ public class PriorityQueue<A, B extends Comparable<B>> implements DataStructure<
 	public boolean checkForDuplicates(A a) {
 		return this.priorityQueue.has(a);
 	}
+
+	@Override
+	public boolean contains(A a) {
+		return this.priorityQueue.has(a);
+	}
 	
 }

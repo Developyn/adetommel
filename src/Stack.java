@@ -81,4 +81,9 @@ public class Stack<A> implements DataStructure<A> {
 		return false;
 	}
 
+	@Override
+	public boolean contains(A a) {
+		return this.stack.has(a);
+	}
+
 }

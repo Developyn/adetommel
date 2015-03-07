@@ -77,5 +77,10 @@ public class Queue<A> implements DataStructure<A>{
 	{
 		return this.queue.has(a);
 	}
+
+	@Override
+	public boolean contains(A a) {
+		return this.queue.has(a);
+	}
 	
 }
