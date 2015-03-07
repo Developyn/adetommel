@@ -10,6 +10,8 @@ public class Node<A> {
   // Keep the implementation of sets open, by using the Set interface:
   private Set<Node<A>> successors; 
   private Maybe<Node<A>> parent;
+  public float costFromStart;
+  public float estimatedCostToGoal;
 
   // We can only build a node with an empty set of successors:
   public Node (A contents) {
@@ -62,6 +64,5 @@ public class Node<A> {
   public void setParent(Maybe<Node<A>> currentParent)
   {
 	  this.parent = currentParent;
-  }
-  
+  }  
 }

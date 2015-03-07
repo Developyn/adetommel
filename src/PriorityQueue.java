@@ -1,11 +1,12 @@
 /*
  * Class represents priority queue
+ * @Helped and advised creation by Charlie Street
  */
 
 public class PriorityQueue<A, B extends Comparable<B>> implements DataStructure<A>
 {
 	
-	private Function<A, B> heuristic;
+	private Function<A, B> heuristic; // f value g + h
 	private IList<A> priorityQueue;
 
 	public PriorityQueue(Function<A, B> heuristic)
@@ -14,6 +15,7 @@ public class PriorityQueue<A, B extends Comparable<B>> implements DataStructure<
 		this.heuristic = heuristic;		
 	}
 	
+	//Big Charles says - priority queue sorts the items in the list for you. From smaller to greater
 	@Override
 	public void insertItem(A e) {
 		
@@ -40,6 +42,8 @@ public class PriorityQueue<A, B extends Comparable<B>> implements DataStructure<
 			}
 		}
 	}
+
+	//write another function which in the apply method for that function - returns the sum of the manhattan apply and the GCost apply
 
 	@Override
 	public void insertList(IList<A> toAdd) {

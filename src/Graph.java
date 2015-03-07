@@ -4,6 +4,8 @@ import java.util.*;
 // This is a minimal class so that a graph can be created.
 
 public class Graph<A> {
+	
+	private Map<Node<A>, Maybe<Node<A>>> pathMap;
 
   // Keep the implementation of sets open, by using the Set interface:
   private Set<Node<A>> nodes;       
@@ -12,7 +14,14 @@ public class Graph<A> {
   public Graph() {
     // Choose any implementation of sets you please, but you need to
     // choose one.
-    nodes = new LinkedHashSet<Node<A>>(); 
+    nodes = new LinkedHashSet<Node<A>>();
+    
+    pathMap = new LinkedHashMap<Node<A>,Maybe<Node<A>>>();
+  }
+  
+  public Map<Node<A>, Maybe<Node<A>>> getPathMap()
+  {
+	  return this.pathMap;
   }
 
   // Get method:
@@ -109,6 +118,8 @@ public class Graph<A> {
     };
 
     Graph<Coordinate> nicksGraph = new Graph<Coordinate>();
+    
+    FunctionTotal funcTotal = new FunctionTotal( nicksGraph, nicksGraph.nodeWith(new Coordinate(0,1)), nicksGraph.nodeWith(new Coordinate(7,1)) );
 
     for (int i = 0; i < nick.length; i++) {
       // What we are going to do relies on the two following facts
@@ -152,7 +163,7 @@ public class Graph<A> {
     
     System.out.println("Paths:");
     /*BFS Path*/
-    System.out.println(nicksGraph.findPath(nicksGraph.nodeWith(new Coordinate(1,0)), (a->a.getX()==4 && a.getY()==1), new Queue<Node<Coordinate>>()));
+    System.out.println(nicksGraph.findPath(nicksGraph.nodeWith(new Coordinate(0,1)), (a->a.getX()==7 && a.getY()==1), new PriorityQueue<Node<Coordinate>, Integer>(funcTotal)));
     /*DFS Path*/
     System.out.println(nicksGraph.findPath(nicksGraph.nodeWith(new Coordinate(1,0)), (a->a.getX()==4 && a.getY()==1), new Stack<Node<Coordinate>>()));
   }
@@ -199,7 +210,7 @@ public class Graph<A> {
 	  frontier.insertItem(nodeStart);
 	  
 	  //Hash Map to store our path
-	  Map<Node<A>, Maybe<Node<A>>> pathMap = new LinkedHashMap< Node<A>, Maybe<Node<A>> >();
+	  this.pathMap = new LinkedHashMap< Node<A>, Maybe<Node<A>> >();
 	  
 	  while(!frontier.isEmpty())
 	  {
@@ -233,8 +244,9 @@ public class Graph<A> {
 			  {
 					successors = successors.append(i);
 			  }
-			  frontier.insertList(successors);
 			  pathMap.put(toExpand, toExpand.getParent());
+			  frontier.insertList(successors);			  
+
 		  }
 	  }
 	  return new Nothing<IList<Node<A>>>();
@@ -256,155 +268,4 @@ public class Graph<A> {
 
 		return new Just<IList<Node<A>>>(path);
   }
-  
-//distance between 2 points sqrt( (x1-x2)^2 + (y1+y2)^2 )
-  public Maybe<IList<Node<A>>> AStarSearch(Node<A> origin, Node<A>goal)
-  {
-	  /*
-	   * The A* algorithm in pseudo-code.
-
-			Notes: the map D is like in Dijkstra's algorithm (usually called g in
-			the literature).
-			
-			d is the distance function.
-			
-			  Given two nodes, it computes the distance between the nodes'
-			  contents. For example, is node contents are coordinates, the
-			  distance between (x1,y1) and (x2,y2) is sqrt((x1-x2)^2 + (y1-y2)^2).
-			  (Assuming the nodes are connected.)
-			
-			h is the heuristic function, which is supposed to satisfy
-			
-			  h(x) <= d(x,y) + h(y).
-			
-			Usually it is the straight-line distance to the destination.
-			
-			The algorithm has four inputs, and (maybe) returns a path:
-			
-			A*(origin, destination, h, d) {
-			    visited = empty set;
-			    pending = the singleton set {origin};
-			    pred = the empty map, like in Dijkstra's algorithm;  
-			    D = the empty map, recording the cost from the origin along best known path;
-			    D[origin] = 0;   
-			    f is an initially empty map, recording the estimated total cost;
-			    f[origin] = h(origin, destination);
-			 
-			    while pending is non-empty {
-			      n = dequeue the node in pending having the lowest f value;
-			
-			      if n equals destination {
-			         We found the required node;
-			         Use the map pred to reconstruct the path, and return it;
-			      } 
-			
-			      add n to the visited set;
-			      for each successor s of n that we haven't visited so far {
-			
-			        cost = D[n] + d(n,s);
-			 
-			        if s is not in pending or cost < D[s] {
-			           pred[s] = n;
-			           D[s] = cost;
-			           f[s] = D[s] + h(s, destination);
-			           add s to pending (if it's not already there);
-			        }
-			      }
-			    }
-			
-			    If we reach this point, there is no path;
-			}
-			 
-			Remarks. 
-			
-			(1) If we define weight[x][y] = d(x,y) - h(x) + h(y), we can use
-			Dijkstra's algorithm to obtain the same effect.
-			
-			(2) If we take h(x)=0, we get Dijktra's algorithm written in a
-			slightly different way, with weight = d. Essentially, we are avoiding
-			working with infinity in this variation of the algorithm.
-			
-			It is worth specializing A* to h(x) to see this explicitly: Then D and
-			f are the same thing. We call the algorithm Dijkstra':
-			
-			Dijkstra'(origin, destination) {
-			  visited = empty set;
-			  pending = the singleton set {origin};
-			  pred = the empty map, like in Dijkstra's algorithm;  
-			  D = the empty map, recording the cost from the origin along best known path;
-			  D[origin] = 0    
-			
-			  while pending is non-empty {
-			    n = dequeue the node in pending having the lowest D value;
-			
-			    if n equals destination {
-			       We found the required node;
-			       Use the map pred to reconstruct the path, and return it;
-			    } 
-			
-			    add n to the visited set;
-			    for each successor s of n that we haven't visited so far {
-			
-			        cost = D[n] + weight[n][s];
-			 
-			        if s is not in pending or cost < D[s] {
-			           pred[s] = n;
-			           D[s] = cost;
-			           add s to pending, if it's not already there;
-			        }
-			      }
-			    }
-			
-			    If we reach this point, there is no path;
-			}
-			
-			This looks different from the algorithm given in the Foundations
-			handout, but is essentially the same. The minor difference is that we
-			use the set pending instead of values infinity.
-
-	   */
-	  	      /* visited = empty set
-			  pending = the singleton set(origin)
-			  pred = empty map, like in Djikstra
-			  D = Empty map, recording the cost from origin along best along best known path;
-			  D[origin] = 0;
-			  f - initially empty map, recording estimated total cost;
-			  f[origin] = h(origin)
-			  while(!pending.isEmpty)
-			  {
-			  		n - the node im pending with lowest value(de-queing)
-			  		if(n == destination)
-			  		{
-			  			found node
-			  			use the map pred to reconstruct the path
-			  		}
-			  		add m to visited set
-			  		for each successor s of n that wasnt't visited so far
-			  		{
-			  			cost = D[n] to d(m, s)
-			  			if(s!= imPending OR cost < D[s])
-			  			{
-			  				pred[s] = m;
-			  				D[s] = cost;
-			  				f[s] = D[s] + h(s)
-			  				adds s to pending
-			  			}
-			  		}
-			  }
-			  h takes 2 nodes and pred a Heuristic distances
-			  d takes nodes (connected) by an edge produces the distance
-			  
-			  visited - set
-			  
-			  pending - set
-			  priority queue <- more marks (like a G)
-			  D[origin] = 0
-			  Key       = Value
-			  
-			  D.put(origin, 0)
-			  
-			  f[n] = f.getValue(m);*/
-	  return null;	  
-  }
 }
-  
