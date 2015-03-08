@@ -1,45 +1,45 @@
-/**this class represents a queue data structure, it is an object with a list as an attribute
- * 
- * @author charlie street
- *
+/*
+ * Class used to create a Queue, implements the DataStructure methods
  */
 public class Queue<A> implements DataStructure<A>{
 
 	private IList<A> queue;
 	
-	/**constructor just creates new empty list
-	 * 
+	/*
+	 * Creates an empty IList of type A
 	 */
 	public Queue() {
 		this.queue = new Nil<A>();
 	}
 	
-	/** this method takes a single item and adds it to the queue
-	 * 
+	/*
+	 * Inserts an item into the queue by appending the current queue state to e
 	 */
 	public void insertItem(A e)
 	{
 		this.queue = this.queue.append(e);
 	}
 
-	/**method inserts items into a list in a FIFO structure
-	 * 
+
+	/*
+	 * Appends an IList to the queue
 	 */
 	@Override
 	public void insertList(IList<A> toAdd) {
 		this.queue = this.queue.append(toAdd);
 	}
 
-	/**method returns the queue with the first item removed and returns nothing if empty list
-	 * 
+	/*
+	 * Remove the head of the queue by setting the queue to its tail
 	 */
 	@Override
 	public void removeHead() {
 		this.queue = this.queue.tail();
 	}
-
-	/**method returns the front of the queue but if it is empty nothing is returned
-	 * 
+	
+	/*
+	 * Returns the head of the queue as long as there is one
+	 * (List has to have a size greater than 0)
 	 */
 	@Override
 	public Maybe<A> getHead() {
@@ -53,31 +53,33 @@ public class Queue<A> implements DataStructure<A>{
 		}
 	}
 	
-	/** returns if list is empty
-	 * 
-	 * @return whether list is empty
+	/*
+	 * Returns the current state of the queue, whether it is empty of not
 	 */
 	public boolean isEmpty()
 	{
 		return this.queue.isEmpty();
 	}
 	
-	/**overwriting to string
-	 * 
+	/*
+	 * Prints out the elements of the queue
 	 */
 	public String toString()
 	{
 		return this.queue.toString();
 	}
 	
-	/**checks whether a parent should be changed by checking current list
-	 * 
+	/*
+	 * Checks if the queue has the value of a, if so it returns true
 	 */
 	public boolean checkForDuplicates(A a)
 	{
 		return this.queue.has(a);
 	}
 
+	/*
+	 * Returns true or false based on whether the Queue contains a
+	 */
 	@Override
 	public boolean contains(A a) {
 		return this.queue.has(a);

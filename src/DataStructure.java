@@ -1,3 +1,7 @@
+/**
+ * 
+ * An interface for a type of DataStructure
+ */
 public interface DataStructure<A>
 {
 	public void insertItem(A e);

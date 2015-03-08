@@ -1,4 +1,6 @@
-
+/*
+ * Class used to work out the G-Cost or from getting from one node to another
+ */
 public class GCost implements Function<Node<Coordinate>, Integer>{
 	
 	Graph<Coordinate> nicksGraph;

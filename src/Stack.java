@@ -1,38 +1,35 @@
-/** this class represents a stack which has a list as an attribute and changes
- * the behaviour of the insertion of items to be that of a stack
- * @author charlie street
- *
- * @param <A>
+/*
+ * Class used to create a Stack, implements the DataStructure methods
  */
 public class Stack<A> implements DataStructure<A> {
 
 	private IList<A> stack;
 	
-	/**constructor initialises stack list
-	 * 
+	/*
+	 * Initialises the IList stack
 	 */
 	public Stack() {
 		this.stack = new Nil<A>();
 	}
-
-	/** method inserts a single item into the stack
-	 * 
+	
+	/*
+	 * Inserts a new item into the stack
 	 */
 	public void insertItem(A e)
 	{
 		this.stack = new Cons<A>(e,this.stack);
 	}
 	
-	/**this method appends items to a stack in a LIFO fashion
-	 * the list to add is reversed as is with the nature of the stack
+	/*
+	 * Inserts an IList into the stack by appending it to the current stack
 	 */
 	@Override
 	public void insertList(IList<A> toAdd) {
 		this.stack = toAdd.reverse().append(this.stack);
 	}
 	
-	/**method removes front item from stack
-	 * 
+	/*
+	 * Removes the head of the stack by setting the stack to the value of its tail
 	 */
 	@Override
 	public void removeHead() 
@@ -40,8 +37,8 @@ public class Stack<A> implements DataStructure<A> {
 		this.stack = this.stack.tail();
 	}
 	
-	/** method returns the front item from the stack
-	 * 
+	/*
+	 * Gets the head of the stack as long as the size of the stack is greater than 0
 	 */
 	@Override
 	public Maybe<A> getHead() 
@@ -56,31 +53,34 @@ public class Stack<A> implements DataStructure<A> {
 		}
 	}
 	
-	/** wrapper method for isEmpty in IList
-	 * 
+	/*
+	 * Returns the state of the stack, false if it has elements in it and true if it's empty
 	 */
 	public boolean isEmpty()
 	{
 		return this.stack.isEmpty();
 	}
 	
-	/**overwriting toString method
-	 * 
+	/*
+	 * Prints the elements of the stack
 	 */
 	public String toString()
 	{
 		return this.stack.toString();
 	}
 	
-	/**method returns whether parent should be kept or changed
-	 * in a stack always change it so return false in a stack, a new duplicate will go before the original
-	 * therefore (in DFS which the stack employs) the parent should be changed to the latest duplicate added as the later item won't get expanded
+	/*
+	 * Since Stack is used for DFS, we want the parent to be the last node it came from and therefore
+	 * we shouldn't have to check for its duplicates
 	 */
 	public boolean checkForDuplicates(A a)
 	{
 		return false;
 	}
-
+	
+	/*
+	 * Returns true or false based on whether the Stack contains a
+	 */
 	@Override
 	public boolean contains(A a) {
 		return this.stack.has(a);

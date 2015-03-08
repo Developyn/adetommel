@@ -1,56 +1,61 @@
 /*
  * Class represents priority queue
- * @Helped and advised creation by Charlie Street
+ * Inspired by ideas described by Charlie Street in last weeks help-session - 04.03.15
  */
 
 public class PriorityQueue<A, B extends Comparable<B>> implements DataStructure<A>
 {
 	
-	private Function<A, B> heuristic; // f value g + h
+	private Function<A, B> fvalue; // f value gcost + heuristic
 	private IList<A> priorityQueue;
 
-	public PriorityQueue(Function<A, B> heuristic)
+	public PriorityQueue(Function<A, B> fvalue)
 	{
 		this.priorityQueue = new Nil<A>();
-		this.heuristic = heuristic;		
+		this.fvalue = fvalue;		
 	}
 	
-	//Big Charles says - priority queue sorts the items in the list for you. From smaller to greater
+	
 	@Override
 	public void insertItem(A e) {
 		
-		boolean itemFound = false; //Used to check if the correct position is found
-		IList<A> temporaryPriority = this.priorityQueue;//Temporary list
-		IList<A> listBeforePosition = new Nil<A>();//Creates a list of items before the found position
+		//Set itemPosFound when the priority queue is empty and inserting it's first item or when
+		//e is greater than the head of the temporaryPriority
+		boolean itemPosFound = false;
+		IList<A> temporaryPriority = this.priorityQueue;//Creates a temporary list
+		IList<A> listBeforePosition = new Nil<A>();//A list used to store items which are less than the value of e
 		
-		while(!itemFound)
+		while(!itemPosFound)
 		{
 			if(temporaryPriority.isEmpty())
 			{
-				itemFound = true;
+				itemPosFound = true;
 				this.priorityQueue = priorityQueue.append(e);
 			}
-			else if(heuristic.apply(e).compareTo(heuristic.apply(temporaryPriority.head()))<=0)
+			//Compare the value of e to the value of the head of the temporaryPriority...
+			//If the value is smaller, move the head into the listBeforePosition
+			//Remove the head from the temporaryPriority by setting it to equal its tail
+			else if(fvalue.apply(e).compareTo(fvalue.apply(temporaryPriority.head()))<=0)
 			{
 				listBeforePosition = listBeforePosition.append(temporaryPriority.head());
 				temporaryPriority = temporaryPriority.tail();
 			}
-			else if(heuristic.apply(e).compareTo(heuristic.apply(temporaryPriority.head()))>0)
+			//If the value of e is great than that of our temporaryPriority's head then
+			//set itemFound to true and append listBeforePosition and the temporaryPriority list
+			else if(fvalue.apply(e).compareTo(fvalue.apply(temporaryPriority.head()))>0)
 			{
-				itemFound = true;
+				itemPosFound = true;
 				this.priorityQueue = listBeforePosition.append(new Cons<A>(e, temporaryPriority));
 			}
 		}
 	}
 
-	//write another function which in the apply method for that function - returns the sum of the manhattan apply and the GCost apply
-
 	@Override
-	public void insertList(IList<A> toAdd) {
-		while(!toAdd.isEmpty())
+	public void insertList(IList<A> listToAdd) {
+		while(!listToAdd.isEmpty())
 		{
-			this.insertItem(toAdd.head());
-			toAdd = toAdd.tail();
+			this.insertItem(listToAdd.head());
+			listToAdd = listToAdd.tail();
 		}
 	}
 
